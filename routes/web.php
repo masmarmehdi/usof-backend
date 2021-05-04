@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,10 +13,20 @@
 |
 */
 
+// Route::get('/hello',[UserController::class, 'index']);
+
+// Route::post('/upload', 'FormController@index');
+Route::get('/register', [UserController::class, 'index']);
+
+Route::post('/store', [UserController::class, 'store']);
+
+Route::get('/login', [UserController::class, 'login']);
+
+Route::post('/check', [UserController::class, 'check']);
+
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/users', [UserController::class, 'show']);
