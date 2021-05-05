@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,8 +23,17 @@ Route::post('/store', [UserController::class, 'store']);
 
 Route::get('/login', [UserController::class, 'login']);
 
-Route::post('/check', [UserController::class, 'check']);
+Route::any('/check', [UserController::class, 'check']);
 
+Route::get('/post',[PostController::class, 'index']);
+Route::post('/post', [PostController::class,'createPost']);
+Route::get('/posts',[PostController::class,'showPosts']);
+
+// Route::get('/post', [PostController::class,'showPosts']);
+
+Route::get('/admin/home', function(){
+    return view('admin/home');
+});
 
 Route::get('/', function () {
     return view('welcome');

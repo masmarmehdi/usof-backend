@@ -45,8 +45,4 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($password);
     }
-
-    public function getNameAttribute($name){
-        return 'My name is: ' .ucfirst($name);
-    }
 }
