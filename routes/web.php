@@ -31,8 +31,12 @@ Route::get('/posts',[PostController::class,'showPosts']);
 
 // Route::get('/post', [PostController::class,'showPosts']);
 
-Route::get('/admin/home', function(){
-    return view('admin/home');
+Route::get('admin/post', function(){
+    return view('admin.post.post');
+});
+
+Route::get('admin/home', function(){
+    return view('admin.home');
 });
 
 Route::get('/', function () {
