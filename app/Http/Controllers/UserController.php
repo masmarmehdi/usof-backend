@@ -1,57 +1,52 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-// use Illuminate\Support\Facades\Request;
+
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\models\User;
 
 class UserController extends Controller
 {
-    public function index()
+
+    public function showUsers(){
+        $user  = User::all();
+        if($user){
+            return User::all();
+        }
+        return response()->json(['message' => 'No users yet'], 404);
+    }
+
+    public function store(Request $request)
     {
-       return view('registration');
+        return User::create($request->all());
     }
-    public function store(){
-        // $user = new User();
-        // $user->name = Request::get('name');
-        // $user->email = Request::get('email');
-        // $user->password = Request::get('password');
-        // $name = $this->request->input('name');
-        // $email = $this->request->input('email');
-        // $password = $this->request->input('password');
-        $input = request()->all();
-        User::create($input);
-        return view('login');
+    
+    public function createUser(Request $request){
+        $user = User::create($request->all());
+        return response()->json($user, 201);
     }
-    public function login(){
-        return view('login');
+
+    public function showUser($id)
+    {
+        $user = User::find($id);
+        if($user){
+            return response()->json($user, 200);
+        }
+        return response()->json(['message' => 'User not found'], 404);
     }
-    public function check(Request $request){
-            if ($request->isMethod('post')){
-                // do anything in 'post request';
-                $input = request()->all();
-                $email = User::where('email',$input['email'])->value('email');
-                $password = User::where('id',8)->value('password');
-                if ($input['email'] == $email){
-                    if($input['password'] == $password){
-                        return view('home');
-                    }
-                    else{
-                        return 'Incorrect Password';
-                    }
-                }
-                else{
-                    return 'incorrect Email';
-                }
-            }
-            else if($request->isMethod('get')){
-                // do anything in 'get request';
-                return view('welcome');
-            }
+
+    public function updateUser($id, Request $request){
+        $user = User::find($id);
+        if($user){
+            $user->update($request->all());
+            return response()->json($user, 200);
+        }
+        return response()->json(['message' => 'User not found'], 404);
     }
-    public function show(){
-        return User::all();
+
+    public function deleteUser($id, Request $request){
+        $user = User::find($id);
+        $user->delete();
+        return response()->json(null, 204);
     }
 }
