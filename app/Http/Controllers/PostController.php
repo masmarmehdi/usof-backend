@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    protected $user;
-    public function __construct(){
-        $this->middleware('auth:api');
-        $this->user = $this->guard()->user();
-    }
+    // protected $user;
+    // public function __construct(){
+    //     $this->middleware('auth:api');
+    //     $this->user = $this->guard()->user();
+    // }
     public function showPosts(){
         $post  = Post::all();
         if($post){
             return Post::all();
-        }
+        };
         return response()->json(['message' => 'No posts yet, create a post and be the fisrt one!'], 404);
     }
     
@@ -26,7 +26,7 @@ class PostController extends Controller
             'title' => 'required',
             'content' => 'required',
             'category' => 'required'
-        ])
+        ]);
         if($validator->fails()){
             return response()->json([
                 'status' => false,
@@ -45,7 +45,7 @@ class PostController extends Controller
         $post = Post::find($id);
         if($post){
             return response()->json($post, 200);
-        }
+        };
         return response()->json(['message' => 'post not found'], 404);
     }
 
@@ -54,7 +54,7 @@ class PostController extends Controller
         if($post){
             $post->update($request->all());
             return response()->json($post, 200);
-        }
+        };
         return response()->json(['message' => 'post not found'], 404);
     }
 
