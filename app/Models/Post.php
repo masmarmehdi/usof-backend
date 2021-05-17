@@ -8,15 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-    protected $fillable = [
+    protected $fillable =[
         'title',
         'content',
         'categories',
         'likes',
         'dislikes'
     ];
-    // protected $casts = [
-    //     'likes' => 'integer',
-    //     'dislikes' => 'integer'
-    // ];
+
+    // public function comments(): HasMany
+    // {
+    //     return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
+    // }
 }

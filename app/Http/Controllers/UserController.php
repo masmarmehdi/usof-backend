@@ -7,7 +7,6 @@ use App\models\User;
 
 class UserController extends Controller
 {
-
     public function showUsers(){
         $user  = User::all();
         if($user){
