@@ -7,6 +7,9 @@ use App\http\controllers\CategoryController;
 use App\http\controllers\PostController;
 use App\http\controllers\UserController;
 use App\http\controllers\MailController;
+use App\http\controllers\PasswordResetController;
+use App\http\controllers\ChangePasswordController;
+
 
 Route::group([
     'middleware' => 'api',
@@ -17,7 +20,9 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);    
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    Route::post('sendPasswordResetLink', [PasswordResetController::class,'sendEmail']);
+    Route::post('resetPassword', [ChangePasswordController::class, 'passwordResetProcess']);    
 });
 
 // User Module:
