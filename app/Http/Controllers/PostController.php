@@ -5,42 +5,48 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\models\Post;
 use Illuminate\Support\Facades\Auth;
+use Validator;
 
 class PostController extends Controller
 {
-    // protected $user;
-    // public function __construct(){
-    //     $this->middleware('auth:api');
-    //     $this->user = $this->guard()->user();
-    // }
-    public function showPosts(){
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->user = Auth::user(Auth::getToken());;
+    }
+    public function index(){
         $post  = Post::all();
         if($post){
             return Post::all();
         };
-        return response()->json(['message' => 'No posts yet, create a post and be the fisrt one!'], 404);
+        return response()->json(['message' => 'No posts yet, create a post and be the first one!'], 404);
     }
     
-    public function createPost(Request $request){
-        $validator = Validator::make($request->all(),[
+    public function store(Request $request){
+        $postReq = [
+            'user_id' => $this->user->id,
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'categories' => $request->input('categories')
+        ];
+        $validator = Validator::make($postReq,[
             'title' => 'required',
             'content' => 'required',
-            'category' => 'required'
+            // 'categories' => 'required'
         ]);
+        
         if($validator->fails()){
             return response()->json([
-                'status' => false,
                 'errors' => $validator->errors()
-            ], 400, $headers);
+            ], 400);
         }
-        $post = Post::create($request->all());
+        $post = Post::create($postReq);
         return response()->json([
-            'status' => true,
             'post' => $post
         ], 201);
     }
 
-    public function showPost($id)
+    public function show($id)
     {
         $post = Post::find($id);
         if($post){
@@ -49,7 +55,7 @@ class PostController extends Controller
         return response()->json(['message' => 'post not found'], 404);
     }
 
-    public function updatePost($id, Request $request){
+    public function update($id, Request $request){
         $post = Post::find($id);
         if($post){
             $post->update($request->all());
@@ -58,28 +64,24 @@ class PostController extends Controller
         return response()->json(['message' => 'post not found'], 404);
     }
 
-    public function deletePost($id, Request $request){
+    public function destroy($id, Request $request){
         $post = Post::find($id);
         $post->delete();
         return response()->json(null, 204);
     }
-    public function createLike($id, Request $request){
-        $post = Post::find($id);
-        // $likes = $request->likes;
-        // if($likes){
-        //     $post->update('')
-        // }
 
+    public function showPosts($category_id)
+    {
+        $category = Category::find($category_id);
+        if ($category)
+            return Posts::whereJsonContains('category_id', (int)$category_id)->get();
+            
+        return response([
+            'message' => 'Invalid category!'
+        ], 404);
     }
-    public function getLikes($id){
-        $post = Post::where('id', $id)->value('likes');
-        return response()->json("Number of likes in this post of id:".$id ." is: ".$post, 200);
-    }
-    public function getDislikes($id){
-        $post = Post::where('id', $id)->value('dislikes');
-        return response()->json("Number of dislikes in this post of id:".$id ." is: ".$post, 200);
-    }
-    
+
+
     protected function guard(){
         return Auth::guard();
     }

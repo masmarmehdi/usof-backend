@@ -13,12 +13,15 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->string('title');
             $table->unsignedBigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('content');
-            $table->string('categories');
+            $table->string('categories')->nullable();
             $table->integer('likes')->default(0);
             $table->integer('dislikes')->default(0);
             $table->timestamps();
+        });
+
+        Schema::table('posts', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

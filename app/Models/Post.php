@@ -11,9 +11,20 @@ class Post extends Model
     protected $fillable =[
         'title',
         'content',
-        'categories',
+        'user_id',
+        'category_id',
         'likes',
         'dislikes'
     ];
 
+    public function likes(){
+        return $this->hasMany(Like::class);
+    }
+    public function disLikes(){
+        return $this->hasMany(Dislike::class);
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comments::class);
+    }
 }

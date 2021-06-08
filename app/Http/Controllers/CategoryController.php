@@ -7,25 +7,24 @@ use App\models\Category;
 
 class CategoryController extends Controller
 {
-    public function showCategories(){
+    public function __construct(){
+        $this->middleware('auth');
+    }
+
+    public function index(){
         $category  = Category::all();
         if($category){
             return Category::all();
         }
-        return response()->json(['message' => 'No Categorys yet'], 404);
+        return response()->json(['message' => 'No Categories yet'], 404);
     }
 
-    public function store(Request $request)
-    {
-        return Category::create($request->all());
-    }
-    
-    public function createCategory(Request $request){
+    public function store(Request $request){
         $category = Category::create($request->all());
         return response()->json($category, 201);
     }
-
-    public function showCategory($id)
+    
+    public function show($id)
     {
         $category = Category::find($id);
         if($category){
@@ -34,7 +33,7 @@ class CategoryController extends Controller
         return response()->json(['message' => 'Category not found'], 404);
     }
 
-    public function updateCategory($id, Request $request){
+    public function update($id, Request $request){
         $category = Category::find($id);
         if($category){
             $category->update($request->all());
@@ -43,7 +42,7 @@ class CategoryController extends Controller
         return response()->json(['message' => 'Category not found'], 404);
     }
 
-    public function deleteCategory($id, Request $request){
+    public function destroy($id, Request $request){
         $category = Category::find($id);
         $category->delete();
         return response()->json(null, 204);
