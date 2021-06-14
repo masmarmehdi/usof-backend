@@ -46,6 +46,7 @@ class PostController extends Controller
         ], 201);
     }
 
+
     public function show($id)
     {
         $post = Post::find($id);
@@ -55,11 +56,14 @@ class PostController extends Controller
         return response()->json(['message' => 'post not found'], 404);
     }
 
-    public function update($id, Request $request){
+    public function update(Request $request, $id){
         $post = Post::find($id);
         if($post){
             $post->update($request->all());
-            return response()->json($post, 200);
+            return response()->json([
+                'message' => 'post  updated successfully!',
+                'post' => $post
+            ], 200);
         };
         return response()->json(['message' => 'post not found'], 404);
     }

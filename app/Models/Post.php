@@ -17,14 +17,16 @@ class Post extends Model
         'dislikes'
     ];
 
-    public function likes(){
-        return $this->hasMany(Like::class);
-    }
-    public function disLikes(){
-        return $this->hasMany(Dislike::class);
+    public function likeDislikes(){
+        return $this->hasMany(LikeDislike::class);
     }
     public function comments()
     {
-        return $this->hasMany(Comments::class);
+        return $this->hasMany(Comment::class);
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 }

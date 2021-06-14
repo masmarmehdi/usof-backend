@@ -37,7 +37,7 @@ class ChangePasswordController extends Controller
           // update password
           $userData->update([
             'password'=>bcrypt($request->password)
-          ]);
+          ]); 
           // remove verification data from db
           $this->updatePasswordRow($request)->delete();
   

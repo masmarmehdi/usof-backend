@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\models\Category;
+use App\models\Post;
+
 
 class CategoryController extends Controller
 {
@@ -18,7 +20,10 @@ class CategoryController extends Controller
         }
         return response()->json(['message' => 'No Categories yet'], 404);
     }
-
+    public function showCategories($post_id){
+        $post = Post::find($post_id);
+        return $post->categories;
+    }
     public function store(Request $request){
         $category = Category::create($request->all());
         return response()->json($category, 201);

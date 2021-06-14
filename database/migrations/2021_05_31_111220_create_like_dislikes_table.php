@@ -13,7 +13,7 @@ class CreateLikeDislikesTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('post_id')->nullable();
             $table->unsignedBigInteger('comment_id')->nullable();
-            $table->enum('type', ['like', 'dislike']);
+            $table->string('type');
             $table->timestamps();
         });
         Schema::table('like_dislikes', function (Blueprint $table) {

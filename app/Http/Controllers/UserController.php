@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\models\User;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
+use File;
+use Validator;
 class UserController extends Controller
 {
     public function __construct()
@@ -22,7 +24,7 @@ class UserController extends Controller
         return response()->json(['message' => 'No users yet'], 404);
     }
 
-    public function store(RegisterRequest $request)
+    public function store(Request $request)
     {
         $user = User::create($request->all());
         return response()->json($user, 201);;
@@ -40,18 +42,7 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'username' => 'string|unique',
-            'name' => 'string|max30',
-            'email' => 'email|unique',
-            'password' => 'min:8|confirmed',
-            'role' => 'alpha|in:user,admin'
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        
+    
         $user = User::find($id);
         if($user){
             $user->update($request->all());
@@ -66,23 +57,29 @@ class UserController extends Controller
         $user->delete();
         return response()->json(null, 204);
     }
-
-
-    public function profilePicture(Request $request){
-        return response()->download(public_path('defaultpp.png'), 'Profile Picture');
-    }
-
-    public function uploadProfilePicture(Request $request){
-        $user = User::find(Auth::user(Auth::getToken())->id);
+    public function downloadProfilePicture(Request $request){
+        $user = User::find($this->user->id);
         $fileName = $this->user->username . '.png';
         $path = $request->file('profilePicture')->move(public_path('/'), $fileName);
-        
-        $user->update([
-            'profilePicture' => $path
-        ]);
         return response()->json([
-            'message' => 'Profile picture uploaded successfully',
-            'url' => url('/' . $fileName)], 200);
+            'message' => 'Profile picture downloaded successfully, now please update your profilePicture',
+            'url' => url('/' . $fileName)
+        ], 200);
+    }
+    public function uploadProfilePicture(Request $request){
+        $profilePicture = $request->file('profilePicture');
+        if($profilePicture){
+            $fileName = $this->user->username . '.png';
+            $profilePicture = $request->file('profilePicture')->store('public');
+            $profilePicture1 = $request->file('profilePicture')->move(public_path('/'), $fileName);
+            $this->user->profilePicture  = url('/' . $fileName);
+            DB::update('update users set profilePicture = ? where id = ?', [url('/' . $fileName),$this->user->id]);
+            return response()->json([
+                'message' => 'Profile picture uploaded successfully',
+                'user' => $this->user
+            ], 200);
+        }
+        return response()->json('error', 404);
     }
 
 }

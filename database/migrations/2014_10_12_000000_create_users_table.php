@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
             $table->string('username');
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('profilePicture')->nullable();
+            $table->string('profilePicture')->default('default.png');
             $table->integer('rating',)->default(0);
             $table->enum('role',['user','admin'])->default('user');
             $table->timestamp('email_verified_at')->nullable();
