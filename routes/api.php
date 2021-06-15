@@ -27,7 +27,6 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::get('profile', [AuthController::class, 'userProfile']);
     Route::post('update', [UserController::class,'userUpdate']);
-    // Route::post('downloadPP', [UserController::class,'downloadProfilePicture']);
     Route::post('profilePicture', [UserController::class,'uploadProfilePicture']);
     Route::post('sendPasswordResetLink', [PasswordResetController::class,'sendEmail']);
     Route::post('resetPassword', [ChangePasswordController::class, 'passwordResetProcess']);    
@@ -66,9 +65,16 @@ Route::post('sendEmail', [MailController::class, 'sendEmail']);
 
 Route::get('admin', [AdminController::class, 'home']);
 Route::get('admin/posts', [AdminController::class, 'showPosts'])->name('post.index');
+Route::get('admin/comments', [AdminController::class, 'showComments'])->name('comment.index');
+Route::get('admin/comments/create', [AdminController::class, 'createComment'])->name('comment.create');
 Route::get('admin/posts/create', [AdminController::class, 'createPost'])->name('post.create');
+Route::get('admin/users/create', [AdminController::class, 'createUser'])->name('user.create');
+
+
 
 Route::post('admin/posts', [AdminController::class, 'storePosts'])->name('post.store');
+Route::post('admin/comments', [AdminController::class, 'storeComments'])->name('comment.store');
+
 Route::get('admin/users', [AdminController::class, 'showUsers'])->name('user.index');
 Route::get('admin/categories', [AdminController::class, 'home'])->name('category.index');
 

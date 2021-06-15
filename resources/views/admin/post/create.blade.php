@@ -13,9 +13,11 @@
               <div class="card-header">
                 <h2 class="card-title">Title</h2>
               </div>
+              {{-- @include('includes.messages') --}}
               <!-- /.card-header -->
               <!-- form start -->
-              <form>
+              <form action=" {{route('post.store')}} " method="POST">
+                {{ csrf_field() }}
                 <div class="card-body">
                   <div class="form-group">
                     <label for="title">Post title</label>
@@ -48,20 +50,20 @@
               </div>
             <!-- /.card-header -->
             <div class="card-body">
-              <textarea id="summernote">
+              <textarea id="summernote" name="body">
                 Place <em>some</em> <u>text</u> <strong>here</strong>
               </textarea>
             </div>
             <div class="card-footer">
               Visit <a href="https://github.com/summernote/summernote/">Summernote</a> documentation for more examples and information about the plugin.
-              </form>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <a href="{{route('post.index')}}"class="btn btn-primary">Back</a>
             </div>
             <!-- /.card -->
-
+          </form>
         </div>
-        <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
         <!-- /.col-->
       </div>
       <!-- ./row -->

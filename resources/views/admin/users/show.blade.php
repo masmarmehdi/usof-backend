@@ -8,12 +8,13 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Blank Page</h1>
+            <h1>Users</h1>
+            <a class="btn btn-primary" href="{{route('user.create')}}">Add new User/Admin</a>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item">Blank Page</li>
+              <li class="breadcrumb-item">Posts</li>
             </ol>
           </div>
         </div>

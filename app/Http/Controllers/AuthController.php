@@ -32,9 +32,9 @@ class AuthController extends Controller
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'username' => 'required|min:2',
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
+            'name' => 'required|string|max:30',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|confirmed|min:8',
             'password_confirmation' => 'required'
         ]);
 
@@ -48,7 +48,7 @@ class AuthController extends Controller
                 ));
 
         return response()->json([
-            'message' => 'User successfully registered',
+            'message' => $request->name .' you are successfully registered!',
             'user' => $user
         ], 201);
     }
@@ -61,7 +61,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'User successfully signed out']);
     }
 
-    // Refresh a token.
+    // Refresh the token.
     public function refresh() {
         return $this->createNewToken(auth()->refresh());
     }
