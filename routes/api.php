@@ -16,6 +16,8 @@ use App\http\controllers\ChangePasswordController;
 use Middleware\AuthKey;
 
 
+
+// Users and Auth routes
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -34,6 +36,8 @@ Route::group([
 
 Route::resource('users', UserController::class);
 
+
+// Posts Routes
 Route::prefix('posts')->middleware('auth')->group(function () {
     Route::get('{post_id}/categories', [CategoryController::class,'showCategories']);
     Route::get('{post_id}/comments', [CommentController::class,'showComments']);
@@ -43,42 +47,42 @@ Route::prefix('posts')->middleware('auth')->group(function () {
     Route::post('{post_id}/like', [LikeDislikeController::class,'createPostLike']);
     Route::delete('{post_id}/like', [LikeDislikeController::class,'deletePostLike']);
 });
-Route::apiResource('posts', PostController::class);
+Route::resource('posts', PostController::class);
 
 
+// Categories Routes
 Route::prefix('categories')->middleware('auth')->group(function () {
-    Route::get('{category_id}/posts', [PostController::class,'showPosts']);
+    Route::get('{category_id}/posts', [CategoryController::class,'showPosts']);
 });
-Route::apiResource('categories', CategoryController::class);
+Route::resource('categories', CategoryController::class);
 
+
+// Comments Routes
 Route::prefix('comments')->middleware('auth')->group(function () {
     Route::get('{comment_id}/like', [CommentController::class,'showCommentLikes']);
     Route::post('{comment_id}/like', [CommentController::class,'createCommentLike']);
     Route::delete('{comment_id}/like', [CommentController::class,'deleteCommentLike']);
 });
-Route::apiResource('comments', CommentController::class);
-
-Route::apiResource('like', LikeDislikeController::class);
-
-Route::post('sendEmail', [MailController::class, 'sendEmail']);
+Route::resource('comments', CommentController::class);
 
 
-Route::get('admin', [AdminController::class, 'home']);
+// Admin panel routes
+Route::get('admin', [AdminController::class, 'home'])->name('home');
 Route::get('admin/posts', [AdminController::class, 'showPosts'])->name('post.index');
+Route::get('admin/posts/create', [AdminController::class, 'createPost'])->name('post.create');
+Route::post('admin/posts', [AdminController::class, 'storePosts'])->name('post.store');
+
+Route::get('admin/categories', [AdminController::class, 'showCategories'])->name('category.index');
+Route::get('admin/categories/create', [AdminController::class, 'createCategory'])->name('category.create');
+Route::post('admin/categories', [AdminController::class, 'storeCategory'])->name('category.store');
+
 Route::get('admin/comments', [AdminController::class, 'showComments'])->name('comment.index');
 Route::get('admin/comments/create', [AdminController::class, 'createComment'])->name('comment.create');
-Route::get('admin/posts/create', [AdminController::class, 'createPost'])->name('post.create');
-Route::get('admin/users/create', [AdminController::class, 'createUser'])->name('user.create');
-
-
-
-Route::post('admin/posts', [AdminController::class, 'storePosts'])->name('post.store');
 Route::post('admin/comments', [AdminController::class, 'storeComments'])->name('comment.store');
 
+Route::get('admin/users/create', [AdminController::class, 'createUser'])->name('user.create');
 Route::get('admin/users', [AdminController::class, 'showUsers'])->name('user.index');
-Route::get('admin/categories', [AdminController::class, 'home'])->name('category.index');
 
-// Route::get('admin/posts/create', [AdminController::class, 'home'])->name('post.create');
 
 
 

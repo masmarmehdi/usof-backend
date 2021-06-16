@@ -21,6 +21,10 @@ class CommentController extends Controller
 
     public function index()
     {
+        $comment = Comment::all();
+        if(!$comment){
+            return response()->json(['message' => 'Comment  does not exist'], 200);
+        }
         return Comment::all();
     }
 
@@ -37,22 +41,34 @@ class CommentController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (!$data = Comment::find($id))
+        $comment = Comment::find($id);
+        $user = User::find($comment->user_id);
+        if (!$comment){
             return response([
-                'message' => 'Invalid comment'
+                'message' => 'Comment does not exist'
             ], 404);
-
-        if ($data->user_id != $this->user->id)
+        }
+        if ($comment->user_id != $this->user->id){
             return response([
-                'message' => 'You can not change this comment!'
+                'message' => 'Access denied! You can not change this comment!',
+                'Commented by' => $user->username
             ], 403);
-        $data->update($request->only(['content']));
-        return $data;
+        }
+        $comment->update($request->only(['content']));
+        return response()->json([
+            'message' => 'Comment added successfully', 
+            'Comment' => $comment
+        ], 200, $headers);
     }
 
     public function destroy($id)
     {
         $comment = Comment::find($id);
+        if($comment->user_id != $this->user->id){
+            return response()->json([
+                'message' => "Access denied! Cannot delete someone's comment"
+            ], 403);
+        }
         if ($comment)
             Comment::destroy($id);
             return response()->json([
@@ -104,10 +120,8 @@ class CommentController extends Controller
 
         $likeDup = LikeDislike::where('user_id', $this->user->id)->where('comment_id', $comment_id)->first();
         
-        // $post_id = Post::find()
         $data = [
             'user_id' => $this->user->id,
-            // 'post_id' => $pos
             'comment_id' => $comment_id,
             'type' => $request->input('type')
         ];
@@ -115,7 +129,13 @@ class CommentController extends Controller
         if ($request->input('type') == 'like'){
 
             if ($likeDup) {
-                $this->deleteCommentLike($request, $comment_id);
+                // $this->deleteCommentLike($request, $comment_id);
+                $data = LikeDislike::where('comment_id', $comment_id)->where('user_id', $this->user->id)->where('type', 'like')->first();
+                $current = Comment::where('id', $comment_id)->first()->likes;
+                $new = $current - 1;
+                Comment::where('id', $comment_id)->update(array('likes' => $new));
+
+                $data->delete();
                 return response([
                     'message' => 'Like deleted successfully'
                 ]);
@@ -133,7 +153,13 @@ class CommentController extends Controller
         else if($request->input('type') == 'dislike'){
 
             if ($likeDup) {
-                $this->deleteCommentLike($request, $comment_id);
+                // $this->deleteCommentLike($request, $comment_id);
+                $data = LikeDislike::where('comment_id', $comment_id)->where('user_id', $this->user->id)->where('type', 'dislike')->first();
+                $current = (int)Comment::where('id', $comment_id)->first()->dislikes;
+                $new = $current - 1;
+                Comment::where('id', $comment_id)->update(array('dislikes' => $new));
+
+                $data->delete();
                 return response([
                     'message' => 'Like deleted successfully'
                 ]);
@@ -153,37 +179,37 @@ class CommentController extends Controller
     }
 
 
-    public function deleteCommentLike(Request $request, $comment_id){
+    // public function deleteCommentLike(Request $request, $comment_id){
 
-        $likeType = LikeDislike::where('comment_id', $comment_id)->first()->type;
+    //     $likeType = LikeDislike::where('comment_id', $comment_id)->first()->type;
 
-        $comment = Comment::find($comment_id);
-        if (!$comment)
-            return response()->json([
-                'message' => 'This Comment does not exist!'
-            ], 404);
-        if ($likeType == 'like'){
-            $data = LikeDislike::where('comment_id', $comment_id)->where('user_id', $this->user->id)->where('type', 'like')->first();
-            $current = Comment::where('id', $comment_id)->first()->likes;
-            $new = $current - 1;
-            Comment::where('id', $comment_id)->update(array('dislikes' => $new));
+    //     $comment = Comment::find($comment_id);
+    //     if (!$comment)
+    //         return response()->json([
+    //             'message' => 'This Comment does not exist!'
+    //         ], 404);
+    //     if ($likeType == 'like'){
+    //         $data = LikeDislike::where('comment_id', $comment_id)->where('user_id', $this->user->id)->where('type', 'like')->first();
+    //         $current = Comment::where('id', $comment_id)->first()->likes;
+    //         $new = $current - 1;
+    //         Comment::where('id', $comment_id)->update(array('dislikes' => $new));
 
-            $data->delete();
-            return response([
-                'message' => 'Like successfuly deleted'
-            ]);
-        }
-        else if ($likeType == 'dislike'){
-            $data = LikeDislike::where('comment_id', $comment_id)->where('user_id', $this->user->id)->where('type', 'dislike')->first();
-            $current = Comment::where('id', $comment_id)->first()->dislikes;
-            $new = $current - 1;
-            Comment::where('id', $comment_id)->update(array('likes' => $new));
+    //         $data->delete();
+    //         return response([
+    //             'message' => 'Like successfuly deleted'
+    //         ]);
+    //     }
+    //     else if ($likeType == 'dislike'){
+    //         $data = LikeDislike::where('comment_id', $comment_id)->where('user_id', $this->user->id)->where('type', 'dislike')->first();
+    //         $current = Comment::where('id', $comment_id)->first()->dislikes;
+    //         $new = $current - 1;
+    //         Comment::where('id', $comment_id)->update(array('likes' => $new));
 
-            $data->delete();
-            return response([
-                'message' => 'Dislike successfuly deleted'
-            ]);
-        }
-        return response()->json(['message' => 'invalid']);
-    }
+    //         $data->delete();
+    //         return response([
+    //             'message' => 'Dislike successfuly deleted'
+    //         ]);
+    //     }
+    //     return response()->json(['message' => 'invalid']);
+    // }
 }

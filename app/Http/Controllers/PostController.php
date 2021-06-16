@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\models\Post;
+use App\models\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
@@ -12,7 +13,7 @@ class PostController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->user = Auth::user(Auth::getToken());;
+        $this->user = Auth::user(Auth::getToken());
     }
     public function index(){
         $post  = Post::all();
@@ -22,28 +23,28 @@ class PostController extends Controller
         return response()->json(['message' => 'No posts yet, create a post and be the first one!'], 404);
     }
     
-    public function store(Request $request){
-        $postReq = [
-            'user_id' => $this->user->id,
-            'title' => $request->input('title'),
-            'content' => $request->input('content'),
-            'categories' => $request->input('categories')
-        ];
-        $validator = Validator::make($postReq,[
-            'title' => 'required',
-            'content' => 'required',
-            // 'categories' => 'required'
-        ]);
-        
-        if($validator->fails()){
+    public function store(Request $request){ 
+            $postReq = [
+                'user_id' => $this->user->id,
+                'title' => $request->input('title'),
+                'content' => $request->input('content'),
+                'categories' => $request->input('categories')
+            ];
+            $validator = Validator::make($postReq,[
+                'title' => 'required',
+                'content' => 'required',
+                'categories' => 'required'
+            ]);
+            
+            if($validator->fails()){
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], 400);
+            }
+            $post = Post::create($postReq);
             return response()->json([
-                'errors' => $validator->errors()
-            ], 400);
-        }
-        $post = Post::create($postReq);
-        return response()->json([
-            'post' => $post
-        ], 201);
+                'post' => $post
+            ], 201);
     }
 
 
@@ -58,6 +59,12 @@ class PostController extends Controller
 
     public function update(Request $request, $id){
         $post = Post::find($id);
+        $user = User::find($post->user_id);
+        if($post->user_id != $this->user->id){
+            return response()->json([
+                'message' => "Access denied ! Cannot edit someone's data",
+                'post by' => $user->username], 200);
+        }
         if($post){
             $post->update($request->all());
             return response()->json([

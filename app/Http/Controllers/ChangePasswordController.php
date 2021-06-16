@@ -12,7 +12,10 @@ use App\Models\User;
 class ChangePasswordController extends Controller
 {
     public function passwordResetProcess(UpdatePasswordRequest $request){
-        return $this->updatePasswordRow($request)->count() > 0 ? $this->resetPassword($request) : $this->tokenNotFoundError();
+      if($this->updatePasswordRow($request)->count() > 0){
+        return $this->resetPassword($request);
+      }
+      return $this->tokenNotFoundError();
     }
   
       // Verify if token is valid
@@ -27,7 +30,7 @@ class ChangePasswordController extends Controller
       private function tokenNotFoundError() {
           return response()->json([
             'error' => 'Either your email or token is wrong.'
-          ],Response::HTTP_UNPROCESSABLE_ENTITY);
+          ],404);
       }
   
       // Reset password

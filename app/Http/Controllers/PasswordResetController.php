@@ -13,22 +13,22 @@ use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
 {
-    public function sendEmail(Request $request)  // this is most important function to send mail and inside of that there are another function
+    public function sendEmail(Request $request)  
     {
-        if (!$this->validateEmail($request->email)) {  // this is validate to fail send mail or true
+        if (!$this->validateEmail($request->email)) {  
             return $this->failedResponse();
         }
-        $this->send($request->email);  //this is a function to send mail 
+        $this->send($request->email);  
         return $this->successResponse();
     }
 
-    public function send($email)  //this is a function to send mail 
+    public function send($email)  
     {
         $token = $this->createToken($email);
-        Mail::to($email)->send(new SendMailPR($token, $email));  // token is important in send mail 
+        Mail::to($email)->send(new SendMailPR($token, $email));  
     }
 
-    public function createToken($email)  // this is a function to get your request email that there are or not to send mail
+    public function createToken($email)
     {
         $oldToken = DB::table('password_resets')->where('email', $email)->first();
 
@@ -42,7 +42,7 @@ class PasswordResetController extends Controller
     }
 
 
-    public function saveToken($token, $email)  // this function save new password
+    public function saveToken($token, $email)
     {
         DB::table('password_resets')->insert([
             'email' => $email,
@@ -53,22 +53,22 @@ class PasswordResetController extends Controller
 
 
 
-    public function validateEmail($email)  //this is a function to get your email from database
+    public function validateEmail($email)
     {
-        return !!User::where('email', $email)->first();
+        return User::where('email', $email)->first();
     }
 
     public function failedResponse()
     {
         return response()->json([
-            'error' => 'Email does\'t found on our database'
-        ], Response::HTTP_NOT_FOUND);
+            'error' => 'Email not found in our database'
+        ], 404);
     }
 
     public function successResponse()
     {
         return response()->json([
             'data' => 'Reset Email is send successfully, please check your inbox.'
-        ], Response::HTTP_OK);
+        ], 200);
     }
 }

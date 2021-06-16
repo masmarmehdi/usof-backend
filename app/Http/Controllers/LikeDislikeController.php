@@ -40,27 +40,29 @@ class LikeDislikeController extends Controller
                 'message' => 'This post does not exist!'
             ], 404);
 
-        $likeisDup = LikeDislike::where('user_id', $this->user->id)->where('post_id', $post_id)->first();
-        $dislikeisDup = LikeDislike::where('user_id', $this->user->id)->where('post_id', $post_id)->first();
-
-            // return response()->json($likeisDup, 200);
+        $likeOrDislikeIsDup = LikeDislike::where('user_id', $this->user->id)->where('post_id', $post_id)->first();
         
-
         $data = [
             'user_id' =>$this->user->id,
             'post_id' => $post_id,
             'type' => $request->input('type')
-        ];
-
-
-            
+        ];            
             if ($request->input('type') == 'like'){
+                if($likeOrDislikeIsDup){
+                    $data = LikeDislike::where('post_id', $post_id)->where('user_id', $this->user->id)->where('type', 'like')->first();
+                    $current = (int)Post::where('id', $post_id)->first()->likes;
+                    $new = $current - 1;
+                    Post::where('id', $post_id)->update(array('likes' => $new));
+                    $data->delete();
+                    $user_id = Post::where('id', $post_id)->first()->user_id;
+                    $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
+                    $UpdatedUserRating = $currentUserRating - 1;
+                    User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
 
-                if ($likeisDup != null || $dislikeisDup != null) {
-                    $this->deletePostLike($request, $post_id);
-                    return response()->json(['message' =>  'Like deleted successfully'], 200);
+                    return response([
+                        'message' => 'Like deleted successfully'
+                    ]);
                 }
-
                 $current = (int)Post::where('id', $post_id)->first()->likes;
                 $new = $current + 1;
                 Post::where('id', $post_id)->update(array('likes' => $new));
@@ -69,14 +71,29 @@ class LikeDislikeController extends Controller
                 $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
                 $UpdatedUserRating = $currentUserRating + 1;
                 User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
+            
+                return response([
+                    'message' => $request->input('type') . ' created',
+                    'Liked by' => $this->user->username,
+                    'data' => LikeDislike::create($data)
+                ]);
+
             }
             else if($request->input('type') == 'dislike'){
-
-                if ($dislikeisDup || $likeisDup){
-                    $this->deletePostLike($request, $post_id);
-                    return response()->json(['message' =>  'Dislike deleted successfully'], 200);
+                if($likeOrDislikeIsDup){
+                    $data = LikeDislike::where('post_id', $post_id)->where('user_id', $this->user->id)->where('type', 'dislike')->first();
+                    $current = Post::where('id', $post_id)->first()->dislikes;
+                    $new = $current - 1;
+                    Post::where('id', $post_id)->update(array('dislikes' => $new));
+                    $data->delete();
+                    $user_id = Post::where('id', $post_id)->first()->user_id;
+                    $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
+                    $UpdatedUserRating = $currentUserRating + 1;
+                    User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
+                    return response([
+                        'message' => 'Dislike deleted successfully'
+                    ]);
                 }
-
                 $current = Post::where('id', $post_id)->first()->dislikes;
                 $new = $current + 1;
                 Post::where('id', $post_id)->update(array('dislikes' => $new));
@@ -85,15 +102,16 @@ class LikeDislikeController extends Controller
                 $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
                 $UpdatedUserRating = $currentUserRating - 1;
                 User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
+
+                return response([
+                    'message' => $request->input('type') . ' created',
+                    'Liked by' => $this->user->username,
+                    'data' => LikeDislike::create($data)
+                ]);
             }
             
             
-            
-            return response([
-                'message' => $request->input('type') . ' created',
-                'Liked by' => $this->user->username,
-                'data' => LikeDislike::create($data)
-            ]);
+
 
         
     }
@@ -106,45 +124,54 @@ class LikeDislikeController extends Controller
 
         $dislike = LikeDislike::where('post_id', $post_id)->first();
 
-        $post = LikDislike::find($post_id);
+        $post = Post::find($post_id);
+        // return response()->json($post, 200);
         if (!$post)
             return response()->json([
                 'message' => 'This post does not exist!'
             ], 404);
-        if ($like == 'like'){
-            $data = LikDislike::where('post_id', $post_id)->where('user_id', $this->user->id)->where('type', $request->input('type'))->first();
-            $current = LikDislike::where('id', $post_id)->first()->$request->input('type');
-            $new = $current - 1;
-            $user_id = Post::where('id', $post_id)->first()->user_id;
-            Post::where('id', $post_id)->update(array('likes' => $new));
-            $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
-            $UpdatedUserRating = $currentUserRating - 1;
-            User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
-            return $data;
-
-            $data->delete();
-            return response([
-                'message' => $request->input('type') . ' successfully deleted'
-            ]);
-        }
-        else if ($dislike == 'dislike'){
-
-            $data = Post::where('post_id', $post_id)->where('user_id', $this->user->id)->where('type', $request->input('type'))->first();
-
-            $current = Post::where('id', $post_id)->first()->dislikes;
-            $new = $current - 1;
-            Post::where('id', $post_id)->update(array('dislikes' => $new));
-            $user_id = Post::where('id', $post_id)->first()->user_id;
-    
-            $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
-            $UpdatedUserRating = $currentUserRating + 1;
-            User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
+        if ($like){
+            $data = LikeDislike::where('post_id', $post_id)->where('user_id', $this->user->id)->where('type', $request->input('type'))->first();
+            // $current = Post::where('id', $post_id)->first()->likes;
+            $likes = Post::find($post_id)->likes;
+            $userslike = LikeDislike::find($this->user->id);
+            if($userslike){
+                $userslike->delete();
+                return response()->json(['message' => 'like deleted successfully'], 200);
+            }
+            return response()->json($user, 200);
+            
+            // $new = $current - 1;
+            // $user_id = Post::where('id', $post_id)->first()->user_id;
+            // Post::where('id', $post_id)->update(array('likes' => $new));
+            // $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
+            // $UpdatedUserRating = $currentUserRating - 1;
+            // User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
             // return $data;
-            $data->delete();
-            return response([
-                'message' => $request->input('type') . ' successfuly deleted'
-            ]);
+
+            // $data->delete();
+            // return response([
+            //     'message' => $request->input('type') . ' successfully deleted'
+            // ]);
         }
+        // else if ($dislike){
+
+        //     $data = Post::where('post_id', $post_id)->where('user_id', $this->user->id)->where('type', $request->input('type'))->first();
+
+        //     $current = Post::where('id', $post_id)->first()->dislikes;
+        //     $new = $current - 1;
+        //     Post::where('id', $post_id)->update(array('dislikes' => $new));
+        //     $user_id = Post::where('id', $post_id)->first()->user_id;
+    
+        //     $currentUserRating = (int)User::where('id', $user_id)->first()->rating;
+        //     $UpdatedUserRating = $currentUserRating + 1;
+        //     User::where('id', $user_id)->update(array('rating' => $UpdatedUserRating));
+        //     // return $data;
+        //     $data->delete();
+        //     return response([
+        //         'message' => $request->input('type') . ' successfuly deleted'
+        //     ]);
+        // }
 
         
     }

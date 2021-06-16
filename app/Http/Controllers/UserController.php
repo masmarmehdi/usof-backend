@@ -26,8 +26,13 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $user = User::create($request->all());
-        return response()->json($user, 201);;
+        if($this->user->role == 'admin'){
+
+            $user = User::create($request->all());
+            return response()->json($user, 201);
+        }
+        
+        return response()->json(['message' => 'Only admins can accesss to this place'], 200);
     }
 
     public function show($id)
@@ -42,30 +47,30 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        if($this->user->role == 'admin'){
     
-        $user = User::find($id);
-        if($user){
-            $user->update($request->all());
-            return response()->json($user, 200);
+            $user = User::find($id);
+            if($user){
+                $user->update($request->all());
+                return response()->json($user, 200);
+            }
+            return response()->json(['message' => 'User not found'], 404);
         }
-        return response()->json(['message' => 'User not found'], 404);
+
+        return response()->json(['message' => 'Only admins can accesss to this place'], 200);
     }
 
     public function destroy($id)
     {
-        $user = User::find($id);
-        $user->delete();
-        return response()->json(null, 204);
+        if($this->user->role == 'admin'){
+            $user = User::find($id);
+            $user->delete();
+            return response()->json(null, 204);
+        }
+
+        return response()->json(['message' => 'Only admins can accesss to this place'], 200);
     }
-    public function downloadProfilePicture(Request $request){
-        $user = User::find($this->user->id);
-        $fileName = $this->user->username . '.png';
-        $path = $request->file('profilePicture')->move(public_path('/'), $fileName);
-        return response()->json([
-            'message' => 'Profile picture downloaded successfully, now please update your profilePicture',
-            'url' => url('/' . $fileName)
-        ], 200);
-    }
+
     public function uploadProfilePicture(Request $request){
         $profilePicture = $request->file('profilePicture');
         if($profilePicture){

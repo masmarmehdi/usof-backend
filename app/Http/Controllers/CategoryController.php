@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\models\Category;
 use App\models\Post;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class CategoryController extends Controller
 {
     public function __construct(){
         $this->middleware('auth');
+        $this->user = Auth::user(Auth::getToken());
     }
 
     public function index(){
@@ -28,7 +31,11 @@ class CategoryController extends Controller
         $category = Category::create($request->all());
         return response()->json($category, 201);
     }
-    
+    public function showPosts($category_id){
+        $post_id = Category::find($category_id)->post_id;
+        $post = Post::find($post_id);
+        return response()->json($post, 200);
+    }
     public function show($id)
     {
         $category = Category::find($id);

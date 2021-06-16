@@ -27,9 +27,11 @@
         <table id="example2" class="table table-bordered table-hover">
           <thead>
           <tr>
-            <th>Serial Number</th>
-            <th>Tag Name</th>
-            <th>Slug</th>
+            <th>Id</th>
+            <th>Category Name</th>
+            <th>Post_id</th>
+            <th>Created at</th>
+            <th>Updated at</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -37,22 +39,15 @@
           <tbody>
             @foreach ($categories as $category)
             <tr>
-              <td>{{$loop->index + 1}}</td>
-              <td>{{$category->name}}</td>
-              <td>{{$category->slug}}</td>
+              <td>{{ $category->id }}</td>
+              <td>{{ $category->title }}</td>
+              <td>{{ $category->post_id }}</td>
+              <td>{{ $category->created_at }}</td>
+              <td>{{ $category->updated_at }}</td>
             </tr>
             @endforeach
 
           </tbody>
-          <tfoot>
-          <tr>
-            <th>Serial Number</th>
-            <th>Category Name</th>
-            <th>Slug</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-          </tfoot>
         </table>
       </div>
     </section>

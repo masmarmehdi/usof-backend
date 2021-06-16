@@ -14,7 +14,7 @@ class CreatePostsTable extends Migration
             $table->string('title');
             $table->unsignedBigInteger('user_id')->unsigned();
             $table->string('content');
-            $table->string('categories')->nullable();
+            $table->string('categories');
             $table->integer('likes')->default(0);
             $table->integer('dislikes')->default(0);
             $table->timestamps();

@@ -36,7 +36,7 @@ class AdminController extends Controller
 
     public function showCategories(){
         $categories = Category::all();
-        return view('admin/category/show',compact('categories'));
+        return view('admin/categories/show',compact('categories'));
     }
 
     public function createPost(){
@@ -44,7 +44,11 @@ class AdminController extends Controller
     }
     public function createComment(){
         return view('admin/comments/create');
-   }
+    }
+
+    public function createCategory(){
+        return view('admin/categories/create');
+    }
     public function createUser(){
         return view('admin/users/create');
     }
@@ -57,5 +61,9 @@ class AdminController extends Controller
     }
     public function storeUser(Request $request){
         return User::create($request->all());
+    }
+
+    public function storeCategory(Request $request){
+        return Category::create($request->all());
     }
 }

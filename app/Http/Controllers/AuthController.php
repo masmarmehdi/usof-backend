@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Admin;
 use Validator;
-
+use DB;
 
 class AuthController extends Controller
 {
@@ -24,37 +27,35 @@ class AuthController extends Controller
         if (! $token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
         return $this->createNewToken($token);
+        
     }
 
     // Register a User.
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|min:2',
+            'username' => 'required|min:2|unique',
             'name' => 'required|string|max:30',
-            'email' => 'required|string|email|unique:users',
+            'email' => 'required|string|email|unique',
             'password' => 'required|string|confirmed|min:8',
-            'password_confirmation' => 'required'
+            'password_confirmation' => 'required',
+            'role' => 'required|in:admin,user'
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
-
         $user = User::create(array_merge(
                     $validator->validated(),
                     ['password' => bcrypt($request->password)]
                 ));
-
         return response()->json([
             'message' => $request->name .' you are successfully registered!',
             'user' => $user
         ], 201);
+        
     }
 
-
-    
     // Log the user out (Invalidate the token).
     public function logout() {
         auth()->logout();
@@ -69,10 +70,7 @@ class AuthController extends Controller
     
     // Get the authenticated User.
     public function userProfile() {
-        // if($token){
-            return response()->json(auth()->user());
-        // }
-        // return response()->json(['message' => 'unauthenticated']);
+        return response()->json(auth()->user());
     }
 
     // Get the token array structure.
@@ -81,7 +79,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            'user' => auth()->user()             
         ]);
     }
 

@@ -13,7 +13,6 @@
               <div class="card-header">
                 <h2 class="card-title">Title</h2>
               </div>
-              @include('includes.messages')
               <!-- /.card-header -->
               <!-- form start -->
               <form action="{{route('category.store')}}" method="POST">
