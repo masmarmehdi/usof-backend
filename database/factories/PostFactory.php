@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -14,10 +16,11 @@ class PostFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => rand(1,100),
+            'user_id' => User::all()->random()->id,
             'title' => $this->faker->title(),
             'content' => $this->faker->text(),
-            'categories' => $this->faker->title(),
+            'images' => $this->faker->image($dir = public_path('posts_picture'), $width = 640, $height = 480, false, false),
+            'categories' => Category::all()->random()->title,
         ];
     }
 }
