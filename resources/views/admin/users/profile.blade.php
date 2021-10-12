@@ -78,6 +78,7 @@
                                         <label>Email address</label>
                                         <input type="email" class="form-control" disabled value="{{$user->email}}">
                                     </div>
+                                    @if(Auth::user() != $user)
                                     <div class="form-group">
                                         <label>Role</label>
                                         <select id="status" name="role" class="form-control custom-select">
@@ -85,6 +86,7 @@
                                             <option @if($user->role == 'admin')selected disabled @endif>admin</option>
                                         </select>
                                     </div>
+                                    @endif
                                     <!-- /.card-body -->
 
                                     <div class="card-footer">

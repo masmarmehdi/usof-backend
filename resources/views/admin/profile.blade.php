@@ -48,6 +48,7 @@
 
                                 <h3 class="profile-username text-center">{{Auth::user()->name}}</h3>
                                 <h5 class="text-center">Role : {{Auth::user()->role}}</h5>
+                                <h5 class="text-center">Rating : {{Auth::user()->rating}}</h5>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -66,7 +67,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label>Username</label>
-                                        <input type="text" class="form-control"  value="{{Auth::user()->username}}">
+                                        <input type="text" class="form-control"  name="username" value="{{Auth::user()->username}}">
                                     </div>
 
                                     <div class="form-group">
@@ -81,13 +82,6 @@
                                         <input type="hidden" name="_token" value="{{csrf_token()}}">
                                         <label>Upload profile picture</label>
                                         <input type="file" class="form-control" name="profilePicture">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Role</label>
-                                        <select id="role" name="role" class="form-control custom-select">
-                                            <option @if(Auth::user()->role == 'user') selected disabled @endif>user</option>
-                                            <option @if(Auth::user()->role == 'admin')selected disabled @endif>admin</option>
-                                        </select>
                                     </div>
                                     <!-- /.card-body -->
 

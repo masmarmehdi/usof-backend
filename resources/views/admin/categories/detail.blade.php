@@ -23,11 +23,10 @@
     <!-- Main content -->
     <section class="content">
       <!-- Default box -->
-      <div class="card">
           <div class="card-body pb-0">
-              <div class="row d-flex">
+              <div class="row d-flex justify-content-center">
 
-                  <div class="col-12">
+                  <div class="col-8">
 
                       @foreach($posts as $post)
                           @if($post->status == 'active')
@@ -46,7 +45,7 @@
                           <div class="card-body pt-0">
                               <div class="row">
                                   <div class="col-12">
-                                      <div class="d-flex justify-content-between mb-5">
+                                      <div class="mb-5">
                                           <div>
                                               @foreach(\App\Models\User::where('id', $post->user_id)->get() as $user)
                                               <img src="/profile_pictures/{{$user->profilePicture}}" alt="{{$user->username}}" class="img-circle" width="60" height="60">
@@ -124,12 +123,10 @@
 
           </div>
         <!-- /.card-body -->
-        <div class="card-footer justify-content-center">
-{{--            {{$posts->links()}}--}}
+        <div class="card-footer d-flex justify-content-center">
+            {{$posts->links()}}
         </div>
         <!-- /.card-footer-->
-      </div>
-      <!-- /.card -->
 
     </section>
     <!-- /.content -->

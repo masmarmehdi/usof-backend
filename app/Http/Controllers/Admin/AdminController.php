@@ -42,8 +42,8 @@ class AdminController extends Controller
             $picture_name = Auth::user()->username . '.' . $profilePicture->getClientOriginalExtension();
             Image::make($profilePicture)->resize(600, 600)->save(public_path('/profile_pictures/' . $picture_name));
             User::where('id', Auth::id())->update([
+                'username' => $request->input('username'),
                 'profilePicture' => $picture_name,
-                'role' => $request->input('role')
             ]);
             return back()->with('success', 'Profile updated successfully');
         }

@@ -64,7 +64,7 @@ class CategoryController extends Controller
 
     public function detail($category_id){
         $category = Category::find($category_id);
-        $posts = Post::where('categories', $category->title)->get();
+        $posts = Post::where('categories', $category->title)->paginate(10);
         return view('admin/categories/detail', compact('posts', 'category'));
     }
 }
