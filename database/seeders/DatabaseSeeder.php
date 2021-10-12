@@ -2,19 +2,28 @@
 
 namespace Database\Seeders;
 
+use App\Models\{
+    Category,
+    Comment,
+    Post,
+    User,
+    LikeDislike
+};
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
     public function run()
     {
-        \App\Models\User::factory(100)->create();
-        \App\Models\Post::factory(100)->create();
-        \App\Models\Category::factory(100)->create();
-        // \App\Models\LikeDislike::factory(100)->create();/
-        // \App\Models\Comment::factory(100)->create();
-
-
+        User::factory(100)->create();
+        Category::factory(100)->create();
+        Post::factory(100)->create();
+        Comment::factory(100)->create();
+        LikeDislike::factory(100)->create();
     }
 }
