@@ -1,5 +1,9 @@
 /node_modules
 /public/hot
+/public/profile_pictures
+/public/posts_picture
+/public/dist
+/public/plugins
 /public/storage
 /storage/*.key
 /vendor
@@ -11,3 +15,5 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/.idea
+/.vscode

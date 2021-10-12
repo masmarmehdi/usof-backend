@@ -13,20 +13,10 @@ class Post extends Model
         'content',
         'user_id',
         'categories',
+        'images',
         'likes',
-        'dislikes'
+        'dislikes',
+        'status'
     ];
 
-    public function likeDislikes(){
-        return $this->hasMany(LikeDislike::class);
-    }
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function categories()
-    {
-        return $this->hasMany(Category::class);
-    }
 }
