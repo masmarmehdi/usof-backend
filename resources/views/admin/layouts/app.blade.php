@@ -9,7 +9,5 @@
             @show
         @include('admin.layouts.footer')
     </div>
-    @section('footer')
-        @show
 </body>
 </html>

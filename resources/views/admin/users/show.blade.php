@@ -8,13 +8,13 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Users</h1>
+            <h1 class="mb-3">Users</h1>
             <a class="btn btn-primary" href="{{route('user.create')}}">Add new User/Admin</a>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item">Posts</li>
+              <li class="breadcrumb-item">Users</li>
             </ol>
           </div>
         </div>
@@ -22,6 +22,17 @@
     </section>
 
     <section class="content">
+        @if(Session::has('success'))
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                {{Session::get('success')}}
+            </div>
+        @elseif(Session::has('fail'))
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                {{Session::get('fail')}}
+            </div>
+        @endif
       <div class="card-body">
         <table id="example1" class="table table-bordered table-hover">
           <thead>
@@ -35,76 +46,37 @@
             <th>role</th>
             <th>Created at</th>
             <th>Updated at</th>
-            <th>Edit</th>
             <th>Delete</th>
           </tr>
           </thead>
           <tbody>
-            
+
             @foreach ($users as $user)
-            {{-- @foreach ($element as $user) --}}
             <tr>
               <td>{{$user->id}}</td>
-              <td>{{$user->username}}</td>
+                <td><a href="{{route('user.profile', $user->id)}}" target="_blank">{{$user->username}}</a></td>
               <td>{{$user->name}}</td>
               <td>{{$user->email}}</td>
-              <td>{{$user->profilePicture}}</td>
+                <td><img class="img-circle" src="/profile_pictures/{{$user->profilePicture}}" alt="{{$user->username}}'s photo" width="100" height="100"></td>
               <td>{{$user->rating}}</td>
               <td>{{$user->role}}</td>
               <td>{{$user->created_at}}</td>
               <td>{{$user->updated_at}}</td>
+                <td>
+                    <form action="{{route('user.destroy', $user->id)}}" method="post">
+                        @csrf
+                        @method('delete')
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
             </tr>
-            
             @endforeach
-
-
-
           </tbody>
         </table>
-
+      </div>
     </section>
     <!-- /.content -->
   </div>  <!-- /.content-wrapper -->
 @endsection
 
-@section('footer')
-<script src="{{asset('plugins/jquery/jquery.min.js')}}"></script>
-<!-- Bootstrap 4 -->
-<script src="{{asset('plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-<!-- DataTables  & Plugins -->
-<script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
-<script src="{{asset('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
-<!-- AdminLTE App -->
-<script src="{{asset('dist/js/adminlte.min.js')}}"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="{{asset('dist/js/demo.js')}}"></script>
-<!-- Page specific script -->
-<script>
-  $(function () {
-    $(document).ready(function() {
-    $('#example1').DataTable();
-    });
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
-</script>
-@endsection
 
