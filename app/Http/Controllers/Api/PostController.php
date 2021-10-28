@@ -31,7 +31,12 @@ class PostController extends Controller
         };
         return response()->json(['message' => 'No posts yet, create a post and be the first one!'], 404);
     }
-
+    public function authType($request){
+        if(Auth::id()){
+            Auth::id();
+        }
+        return $request->input('user_id');
+    }
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(),[
@@ -65,7 +70,7 @@ class PostController extends Controller
             }
         }
         $post = Post::create([
-            'user_id' =>  Auth::id(),
+            'user_id' =>  $this->authType($request),
             'title' => $request->input('title'),
             'content' => $request->input('content'),
             'categories' => $request->input('categories'),

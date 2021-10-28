@@ -24,7 +24,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if(Auth::user()->role == 'admin'){
+        if(Auth::user()->role  == 'admin'){
 
             $user = User::create(array_merge(
                 $request->all(),

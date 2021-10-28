@@ -41,6 +41,12 @@ class CommentController extends Controller
         $comment = Comment::find($id);
         return view('admin.comments.edit', compact('comment'));
     }
+    public function authType($request){
+        if(Auth::id()){
+            Auth::id();
+        }
+        return $request->input('user_id');
+    }
     public function update(Request $request, $id)
     {
         $comment = Comment::find($id);
@@ -50,7 +56,7 @@ class CommentController extends Controller
                 'message' => 'Comment does not exist'
             ], 404);
         }
-        if ($comment->user_id != Auth::id()){
+        if ($comment->user_id != $this->authType($request)){
             return response([
                 'message' => 'Access denied! You can not change this comment!',
                 'Commented by' => $user->username
@@ -64,10 +70,10 @@ class CommentController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         $comment = Comment::find($id);
-        if($comment->user_id != Auth::id()){
+        if($comment->user_id != $this->authType($request)){
             return response()->json([
                 'message' => "Access denied! Cannot delete someone's comment"
             ], 403);
@@ -108,7 +114,7 @@ class CommentController extends Controller
             ], 404);
 
         $comment = Comment::create([
-            'user_id' => Auth::id(),
+            'user_id' => $this->authType($request),
             'post_id' => $post_id,
             'content' => $request->input('content')
         ]);
