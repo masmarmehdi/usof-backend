@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
-use Illuminate\{
-    Http\Request,
-    Http\JsonResponse,
-    Support\Facades\Auth
-};
+use Illuminate\{Http\Request, Http\JsonResponse, Support\Facades\Auth, Support\Facades\Validator};
 use App\models\User;
 use Intervention\Image\Facades\Image;
 
@@ -60,7 +56,14 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Only admins can access to this place'], 200);
     }
-
+    public function userUpdate(Request $request){
+        $user = Auth::id() ? User::find(Auth::id()) : User::find($request->input('user_id'));
+        if($user){
+            $user->update($request->all());
+            return response()->json(['success' => 'User data updated successfully!', 'user' => $user], 200);
+        }
+        return response()->json(['error' => 'No such user']);
+    }
     public function destroy($id)
     {
         if(Auth::user()->role == 'admin'){
@@ -77,20 +80,23 @@ class UserController extends Controller
 
     public function updateProfilePicture(Request $request): JsonResponse
     {
-        $validation = $request->validate([
+        $user = User::find($request->input('user_id'));
+        $username = $request->input('username');
+        $profilePicture = $request->file('profilePicture');
+
+        $validation = Validator::make($request->all(),[
             'profilePicture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $profilePicture = $request->file('profilePicture');
+        if($validation->fails()){
+            return response()->json(['error' => $validation->errors()]);
+        }
         if($request->hasFile('profilePicture')){
-            if($validation) {
-                $profilePicture_name = Auth::user()->username . '.' . $profilePicture->getClientOriginalExtension();
-                Image::make($profilePicture)->resize(100, 100)->save(public_path('profile_pictures/' . $profilePicture_name));
-                User::where('id', Auth::id())->update([
+                $profilePicture_name = $username . '.' . $profilePicture->getClientOriginalExtension();
+                Image::make($profilePicture)->save(public_path('profile_pictures/' . $profilePicture_name));
+                User::where('id', Auth::id() ? Auth::id() : $request->input('user_id'))->update([
                     'profilePicture' => $profilePicture_name
                 ]);
-                return response()->json(['success' => 'Profile Picture uploaded successfully']);
-            }
-            return response()->json(['fail' => 'Invalid extension']);
+                return response()->json(['success' => 'Profile Picture uploaded successfully', 'user' => $user]);
         }
         return response()->json(['fail', 'something went wrong.. Please try again later.']);
     }
