@@ -21,13 +21,12 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('profile', [AuthController::class, 'userProfile']);
     Route::post('update', [UserController::class,'userUpdate']);
-    Route::patch('profilePicture', [UserController::class,'updateProfilePicture']);
+    Route::post('profilePicture', [UserController::class,'updateProfilePicture']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 });
 
 Route::resource('users', UserController::class);
-
 
 // Post Routes
 
