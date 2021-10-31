@@ -81,7 +81,7 @@ class UserController extends Controller
     public function updateProfilePicture(Request $request): JsonResponse
     {
         $user = User::find($request->input('user_id'));
-        $username = $request->input('username');
+        $username = $user->username;
         $profilePicture = $request->file('profilePicture');
 
         $validation = Validator::make($request->all(),[
