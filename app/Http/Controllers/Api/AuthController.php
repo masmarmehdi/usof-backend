@@ -29,7 +29,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
         $auth_check = Auth::attempt($validation->validated());
-        $user = User::where('email', $request->input('email'));
+        $user = User::where('email', $request->input('email'))->first();
         if($user){
             if ($auth_check) {
                 $request->session()->regenerate();
