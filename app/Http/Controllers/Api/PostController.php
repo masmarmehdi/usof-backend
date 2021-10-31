@@ -56,9 +56,7 @@ class PostController extends Controller
         }
 
         if($validator->fails()){
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 400);
+            return response()->json(['error' => $validator->errors()]);
         }
         $categories = explode(", ", $request->input('categories'));
         foreach($categories as $category){
