@@ -25,7 +25,7 @@ class PostController extends Controller
     }
 
     public function index(){
-        $post  = Post::all();
+        $post  = Post::latest()->simplePaginate(10);
         if($post){
             return Post::all();
         };

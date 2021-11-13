@@ -27,6 +27,7 @@ Route::group([
 });
 
 Route::resource('users', UserController::class);
+Route::get('/users/{user_id}/posts', [UserController::class,'showUserPosts']);
 
 // Post Routes
 
@@ -37,11 +38,9 @@ Route::resource('users', UserController::class);
         Route::get('{post_id}/like', [LikeDislikeController::class,'getLikes']);
         Route::get('{post_id}/dislike', [LikeDislikeController::class,'getDislikes']);
 
-        Route::middleware(['auth', 'verified'])->group(function (){
-            Route::post('{post_id}/like', [LikeDislikeController::class,'postLike']);
-            Route::post('{post_id}/dislike', [LikeDislikeController::class,'postDislike']);
-            Route::post('{post_id}/comments', [CommentController::class,'createComment']);
-        });
+        Route::post('{post_id}/like', [LikeDislikeController::class,'postLike']);
+        Route::post('{post_id}/dislike', [LikeDislikeController::class,'postDislike']);
+        Route::post('{post_id}/comments', [CommentController::class,'createComment']);
     });
 
 Route::resource('posts', PostController::class);
@@ -56,10 +55,8 @@ Route::resource('categories', CategoryController::class);
 // Comments Routes
 Route::prefix('comments')->group(function () {
     Route::get('{comment_id}/like', [CommentController::class,'showCommentLikes']);
-    Route::middleware('auth')->group(function(){
-        Route::post('{comment_id}/like', [LikeDislikeController::class,'commentLike']);
-        Route::post('{comment_id}/dislike', [LikeDislikeController::class,'commentDislike']);
-    });
+    Route::post('{comment_id}/like', [LikeDislikeController::class,'commentLike']);
+    Route::post('{comment_id}/dislike', [LikeDislikeController::class,'commentDislike']);
 
 });
 Route::resource('comments', CommentController::class);

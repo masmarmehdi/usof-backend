@@ -9,12 +9,8 @@ use App\models\{
     Category,
     Post
 };
-use Illuminate\{
-    Http\Request,
-    Http\JsonResponse,
-    Http\RedirectResponse,
-    Support\Facades\Validator
-};
+use Illuminate\{Http\Request, Http\JsonResponse, Http\RedirectResponse, Support\Facades\DB, Support\Facades\Validator};
+use function PHPUnit\Framework\isEmpty;
 
 class CategoryController extends Controller
 {
@@ -41,9 +37,13 @@ class CategoryController extends Controller
     }
     public function showPosts($category_id): JsonResponse
     {
-        $category_title = Category::find($category_id)->title;
-        $posts = Post::all();
-        if($category_title){
+        $category = Category::find($category_id);
+        $category_title = $category->title;
+        $posts = Post::where('categories', $category_title)->get();
+        if($posts->isEmpty()){
+            return response()->json(['error' => 'No posts with ' . $category_title . ' category...' ]);
+        }
+        if($category){
             $getting_specific_categories = [];
             foreach($posts as $post){
                 if(str_contains($post->categories, $category_title) !== false){

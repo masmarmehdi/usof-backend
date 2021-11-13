@@ -43,7 +43,7 @@ class CommentController extends Controller
     }
     public function authType($request){
         if(Auth::id()){
-            Auth::id();
+            return Auth::id();
         }
         return $request->input('user_id');
     }
@@ -81,7 +81,7 @@ class CommentController extends Controller
         if ($comment) {
             Comment::destroy($id);
             return response()->json([
-                'message' => 'comment deleted succcessfully'
+                'message' => 'comment deleted successfully'
             ], 200);
         }
         return response([
@@ -91,12 +91,12 @@ class CommentController extends Controller
 
     public function showComments($post_id)
     {
-        $post = Post::find($post_id);
+        $post = Post::find($post_id)->first();
         if (!$post)
             return response()->json([
                 'message' => 'This Comment does not exist!'
             ], 404);
-        $comment = Comment::where('post_id', $post_id)->get()->toArray();
+        $comment = Comment::where('post_id', $post_id)->get();
         if (!$comment)
             return response([
                 'message' => 'Invalid Comment or no comments'
@@ -110,7 +110,7 @@ class CommentController extends Controller
         $post = Post::find($post_id);
         if (!$post)
             return response()->json([
-                'message' => 'This Comment does not exist!'
+                'message' => 'This Post does not exist!'
             ], 404);
 
         $comment = Comment::create([
@@ -118,7 +118,7 @@ class CommentController extends Controller
             'post_id' => $post_id,
             'content' => $request->input('content')
         ]);
-        return response()->json($comment, 201);
+        return response()->json($comment);
     }
 
 }

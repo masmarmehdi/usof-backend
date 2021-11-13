@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use Illuminate\{Http\Request, Http\JsonResponse, Support\Facades\Auth, Support\Facades\Validator};
 use App\models\User;
 use Intervention\Image\Facades\Image;
@@ -99,6 +100,19 @@ class UserController extends Controller
                 return response()->json(['success' => 'Profile Picture uploaded successfully', 'user' => $user]);
         }
         return response()->json(['fail', 'something went wrong.. Please try again later.']);
+    }
+
+    public function showUserPosts($user_id){
+        $user = User::find($user_id);
+        if($user){
+            $user_posts = Post::where('user_id', $user_id)->get();
+            if($user_posts){
+                return response()->json($user_posts);
+            }
+            return response()->json(['error' => $user->username ." still didn't publish a post" ]);
+
+        }
+        return response()->json(['error' => "User id doesn't exist in our database"]);
     }
 
 }
