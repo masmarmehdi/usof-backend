@@ -32,8 +32,8 @@ class LikeDislikeController extends Controller
         return response()->json("Number of dislikes in " . $user->username. "'s post is: ".$dislikes, 200);
     }
 
-    public function index(){
-        $like_dislike = LikeDislike::all();
+    public function index($post_id){
+        $like_dislike = LikeDislike::where('post_id', $post_id)->get();
         if($like_dislike){
             return response()->json($like_dislike);
         }
@@ -41,7 +41,7 @@ class LikeDislikeController extends Controller
     }
     public function authType($request){
         if(Auth::id()){
-            Auth::id();
+            return Auth::id();
         }
         return $request->input('user_id');
     }
@@ -93,7 +93,7 @@ class LikeDislikeController extends Controller
 
         if($is_dislike_duplicate){
             $current = Post::where('id', $post_id)->first()->dislikes;
-            $new = $current + 1;
+            $new = $current - 1;
             Post::where('id', $post_id)->update(array('dislikes' => $new));
             LikeDislike::where('post_id', $post_id)->where('user_id', $this->authType($request))->delete();
             $user_id = Post::where('id', $post_id)->first()->user_id;
