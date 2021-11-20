@@ -19,10 +19,6 @@ use App\Models\{
 
 class PostController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth')->only('create', 'update', 'destroy');
-    }
 
     public function index(){
         $post  = Post::latest()->simplePaginate(10);
@@ -33,7 +29,7 @@ class PostController extends Controller
     }
     public function authType($request){
         if(Auth::id()){
-            Auth::id();
+            return Auth::id();
         }
         return $request->input('user_id');
     }
@@ -100,14 +96,7 @@ class PostController extends Controller
             'status' => 'required'
         ]);
         $post = Post::find($id);
-        $user = User::find($post->user_id);
 
-        if($post->user_id != Auth::id()){
-            return response()->json([
-                'message' => "Access denied ! Cannot edit someone's data",
-                'post by' => $user->username
-            ], 200);
-        }
         if($validator->fails()){
             return response()->json(['error' => $validator->errors()]);
         }
@@ -131,7 +120,9 @@ class PostController extends Controller
                 }
             }
             $post->update([
-                $request->all(),
+                'title' => $request->input('title'),
+                'categories' => $request->input('categories'),
+                'content' => $request->input('content'),
                 'images' => implode("|",$images),
                 'status' => $request->input('status')
             ]);
@@ -143,12 +134,12 @@ class PostController extends Controller
         return response()->json(['message' => 'post not found'], 404);
     }
 
-    public function destroy($id, Request $request): JsonResponse
+    public function destroy($id): JsonResponse
     {
         $post = Post::find($id);
         if($post){
             $post->delete();
-            return response()->json(['message' => 'Post deleted successfully!'], 204);
+            return response()->json(['message' => 'Post deleted successfully!']);
         }
         return response()->json(['error' => 'Post does not exist!']);
 
