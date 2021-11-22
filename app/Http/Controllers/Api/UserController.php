@@ -106,10 +106,11 @@ class UserController extends Controller
         $user = User::find($user_id);
         if($user){
             $user_posts = Post::where('user_id', $user_id)->get();
-            if($user_posts){
-                return response()->json($user_posts);
+            if($user_posts->isEmpty()){
+                return response()->json(['error' => $user->username ." still didn't publish a post yet..." ]);
+
             }
-            return response()->json(['error' => $user->username ." still didn't publish a post" ]);
+            return response()->json($user_posts);
 
         }
         return response()->json(['error' => "User id doesn't exist in our database"]);
