@@ -4,7 +4,7 @@
 
 ## About the project
 
-  This is a blog web API, which is related to question and answers. It contains only the rest-api for now (back-end), The front-end will be released soon! 
+  This is a blog web API, which is related to question and answers. It contains only the rest-api for now (back-end), [The front-end part is here](https://github.com/masmarmehdi/usof-frontend)! 
 
 ## Languages
 <ul>
